@@ -19,17 +19,18 @@ var changeFavicon = function() {
  *  f12: 123  Toggle Dev Tools
 \*/
 
-var onKeyPress = function(e) {
+var onKeyUp = function(e) {
     chrome.extension.sendMessage({
         "action": "getQuickChangeOptions"
     }, function(response) {
-        /* if (e.which >= 112 && e.which <= 123) {
-            console.log(e.which);
+        var keyPressed = e.key || e.keyCode || e.which;
+        /* if (keyPressed >= 112 && keyPressed <= 123) {
+            console.log(keyPressed);
         } */
-        if (e.which === response.key && response.enabled) {
-            changeFavicon()
+        if (keyPressed === response.key && response.enabled) {
+            changeFavicon();
         }
     });
 }
 
-window.addEventListener('keyup', onKeyPress, false);
+window.addEventListener('keyup', onKeyUp);
