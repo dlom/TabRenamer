@@ -1,0 +1,3 @@
+[submodule "favicon.js"]
+	path = favicon.js
+	url = git://github.com/Dlom/favicon.js.git

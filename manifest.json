@@ -1,0 +1,34 @@
+{
+    "name": "Tab Renamer",
+    "version": "4",
+    "manifest_version": 2,
+    "description": "Renames tabs",
+    "icons": {
+        "128": "images/128.png",
+        "16": "images/16.png",
+        "48": "images/48.png"
+    },
+    /*"browser_action": {
+        "default_icon":"images/48.png",
+        "default_title":"Rename Tab"
+    },*/
+    "background": {
+        "scripts": ["js/background.js"],
+        "persistent": false
+    },
+    "content_scripts": [{
+        "js": ["js/content.js"],
+        "matches": ["http://*/*", "https://*/*"]
+    }],
+    "browser_action": {
+        "default_title": "Rename Tab",
+        "default_icon": "images/48.png",
+        "default_popup": "html/popup.html"
+    },
+    "permissions": [
+        "tabs",
+        "storage",
+        "http://*/*",
+        "https://*/*"
+    ]
+}
