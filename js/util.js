@@ -10,13 +10,17 @@ var changeFaviconQuick = function(tabId) {
     changeFavicon("http://www.google.com", "Totally Actually Google", tabId);
 }
 
+var getFavicon = function(url) {
+    if (url !== "blank") {
+        return faviconEndpoint + url;
+    } else {
+        return chrome.extension.getURL("images/chrome-favicon.png");
+    }
+}
+
 var changeFavicon = function(url, title, tabId) {
     if (tabId == null) tabId = null; // Testing if null *or* undefined
-    if (url !== "blank") {
-        url = faviconEndpoint + url;
-    } else {
-        url = chrome.extension.getURL("images/chrome-favicon.png");
-    }
+    url = getFavicon(url);
     chrome.tabs.executeScript(tabId, {
         "file": "favicon.js/favicon.min.js"
     }, function() {
