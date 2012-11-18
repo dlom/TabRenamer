@@ -24,13 +24,10 @@ var onKeyUp = function(e) {
         "action": "getQuickChangeOptions"
     }, function(response) {
         var keyPressed = e.key || e.keyCode || e.which;
-        /* if (keyPressed >= 112 && keyPressed <= 123) {
-            console.log(keyPressed);
-        } */
         if (keyPressed === response.key && response.enabled) {
             changeFavicon();
         }
     });
-}
+};
 
-window.addEventListener('keyup', onKeyUp);
+window.addEventListener("keyup", onKeyUp);
