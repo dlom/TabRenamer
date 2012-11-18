@@ -1,0 +1,21 @@
+h1, h2 {
+    margin: 0;
+}
+
+.help {
+    border-bottom: 1px dotted;
+    cursor: help;
+}
+
+.help:hover {
+    background-color: #EEE;
+}
+
+.hidden {
+    display: none;
+}
+
+#quickFaviconTestImage {
+    width: 16px;
+    height: 16px;
+}

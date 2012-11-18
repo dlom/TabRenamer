@@ -1,3 +1,5 @@
+var storage = new Store("tabrenamer", storageDefaults);
+
 window.onload = function() {
     chrome.windows.getCurrent(function(w) {
         chrome.tabs.getSelected(w.id, function (t) {
@@ -11,7 +13,7 @@ window.onload = function() {
             });
 
             titleBox.addEventListener("keyup", function(e) {
-                changeFavicon("blank", titleBox.value, t.id);
+                changeFavicon(storage.get("keepFavicon") ? "" : "blank", titleBox.value.replace("'", "\\'"), t.id);
             });
 
             titleBox.focus();
