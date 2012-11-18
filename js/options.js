@@ -211,6 +211,4 @@ var addTypingHandlers = function(input) {
     })
 };
 
-window.onload = function() {
-    initialize();
-}
+window.addEventListener("load", initialize);

@@ -1,6 +1,6 @@
 var storage = new Store("tabrenamer", storageDefaults);
 
-window.onload = function() {
+window.addEventListener("load", function() {
     chrome.windows.getCurrent(function(w) {
         chrome.tabs.getSelected(w.id, function (t) {
             var titleBox = document.getElementById("title");
@@ -19,4 +19,4 @@ window.onload = function() {
             titleBox.focus();
         });
     });
-};
+});
