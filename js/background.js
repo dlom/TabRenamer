@@ -8,7 +8,7 @@ var initialize = function() {
             changeFavicon(message.url, message.title, sender.tab.id);
             break;
         case "quickRename":
-            changeFaviconQuick(sender.tab.id)
+            changeFaviconQuick(sender.tab.id);
             break;
         case "getQuickChangeOptions":
             callback({

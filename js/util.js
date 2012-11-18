@@ -10,7 +10,7 @@ var storageDefaults = {
     "shortcutKey": "-10000"
 };
 
-var l = function(x) { console.log (x) };
+var l = function(x) { console.log (x); };
 
 var setPopup = function(enabled) {
     if (enabled) {

@@ -70,7 +70,7 @@ var drawTypeOptions = function(parent) {
 };
 
 var typeHandler = function() {
-    var manualOrQuick = document.getElementById("manualOrQuick")
+    var manualOrQuick = document.getElementById("manualOrQuick");
     manualOrQuick.innerHTML = "";
     if (this.value === "manual") {
         drawManualOptions(manualOrQuick);
@@ -208,7 +208,7 @@ var addTypingHandlers = function(input) {
     input.addEventListener("blur", function() {
         clearTimeout(typingIntervals[input.id]);
         save(input.id, input.value);
-    })
+    });
 };
 
 window.addEventListener("load", initialize);
