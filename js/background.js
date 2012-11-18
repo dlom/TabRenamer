@@ -1,3 +1,9 @@
+var storageDefaults = {
+    "type": "manual"
+};
+
+var storage = new Store("tabrenamer", storageDefaults);
+
 var initialize = function() {
     var quickChangeEnabled = true;
     setPopup(!quickChangeEnabled);
@@ -32,4 +38,10 @@ var setPopup = function(enabled) {
     }
 };
 
-initialize();
+chrome.runtime.onInstalled.addListener(function(details) {
+    if (details.reason === "install") {
+        storage.saveSync();
+    }
+});
+
+storage.loadSync(initialize);

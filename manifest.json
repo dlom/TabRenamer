@@ -14,14 +14,16 @@
     },*/
     "background": {
         "scripts": [
-            "js/background.js",
-            "js/util.js"
+            "js/util.js",
+            "js/store.js",
+            "js/background.js"
         ],
         "persistent": false
     },
     "content_scripts": [{
         "js": ["js/content.js"],
-        "matches": ["http://*/*", "https://*/*"]
+        // "matches": ["http://*/*", "https://*/*"]
+        "matches": ["http://dlom.github.com/*"]
     }],
     "browser_action": {
         "default_title": "Rename Tab",
