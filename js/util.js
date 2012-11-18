@@ -1,5 +1,11 @@
 var faviconEndpoint = "http://g.etfv.co/";
 
+var storageDefaults = {
+    "type": "manual"
+};
+
+var l = function(x) { console.log (x) };
+
 var changeFaviconQuick = function(tabId) {
     changeFavicon("http://www.google.com", "Totally Actually Google", tabId);
 }
@@ -19,4 +25,3 @@ var changeFavicon = function(url, title, tabId) {
         });
     });
 };
-
