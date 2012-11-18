@@ -1,7 +1,3 @@
-var storageDefaults = {
-    "type": "manual"
-};
-
 var storage = new Store("tabrenamer", storageDefaults);
 
 var initialize = function() {
@@ -14,12 +10,13 @@ var initialize = function() {
             break;
         case "quickRename":
             changeFavicon("blank", "Totally Wikipedia", sender.tab.id)
+            break;
         case "getQuickChangeOptions":
             callback({
                 "key": 113,
                 "enabled": quickChangeEnabled
-            })
-        }
+            });
+            break;
     });
     chrome.browserAction.onClicked.addListener(function(tab) {
         changeFaviconQuick(tab.id);
@@ -38,10 +35,6 @@ var setPopup = function(enabled) {
     }
 };
 
-chrome.runtime.onInstalled.addListener(function(details) {
-    if (details.reason === "install") {
-        storage.saveSync();
-    }
+chrome.runtime.onStartup.addListener(function() {
+    storage.loadSync(initialize);
 });
-
-storage.loadSync(initialize);
