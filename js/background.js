@@ -17,6 +17,7 @@ var initialize = function() {
                 "enabled": quickChangeEnabled
             });
             break;
+        }
     });
     chrome.browserAction.onClicked.addListener(function(tab) {
         changeFaviconQuick(tab.id);
