@@ -9,7 +9,7 @@ var initialize = function() {
             changeFavicon(message.url, message.title, sender.tab.id);
             break;
         case "quickRename":
-            changeFavicon("blank", "Totally Wikipedia", sender.tab.id)
+            changeFaviconQuick(sender.tab.id)
             break;
         case "getQuickChangeOptions":
             callback({
@@ -24,18 +24,4 @@ var initialize = function() {
     });
 };
 
-var setPopup = function(enabled) {
-    if (enabled) {
-        chrome.browserAction.setPopup({
-            popup: "html/popup.html"
-        });
-    } else {
-        chrome.browserAction.setPopup({
-            popup: ""
-        });
-    }
-};
-
-chrome.runtime.onStartup.addListener(function() {
-    storage.loadSync(initialize);
-});
+storage.loadSync(initialize);
