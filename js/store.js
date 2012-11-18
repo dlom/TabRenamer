@@ -97,13 +97,22 @@
         });
     };
 
-    Store.prototype.loadSync = function(merge, callback) {
+    Store.prototype.loadSync = function(defaults, merge, callback) {
         var that = this;
+        if (typeof defaults === "function" && merge == null && callback == null) {
+            callback = defaults;
+            merge = true;
+            defaults = {};
+        }
         if (typeof merge === "function" && callback == null) {
             callback = merge;
             merge = true;
+            if (typeof defaults === "boolean") {
+                merge = defaults;
+                defaults = {};
+            }
         }
-        chrome.storage.sync.get(null, function(values) {
+        chrome.storage.sync.get(defaults, function(values) {
             that.fromObject(values, merge, true);
             callback && callback(that);
         });
