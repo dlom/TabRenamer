@@ -1,5 +1,7 @@
 var faviconEndpoint = "http://g.etfv.co/";
 
+var keyEnter = 13;
+
 var storageDefaults = {
     "type": "manual"
 };

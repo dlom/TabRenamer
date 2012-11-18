@@ -1,11 +1,11 @@
 window.onload = function() {
     chrome.windows.getCurrent(function(w) {
-        chrome.tabs.getSelected(w.id, function (t){
+        chrome.tabs.getSelected(w.id, function (t) {
             var titleBox = document.getElementById("title");
 
             titleBox.addEventListener("keydown", function(e) {
                 var keyPressed = e.key || e.keyCode || e.which;
-                if (keyPressed === 13) {
+                if (keyPressed === keyEnter) {
                     window.close();
                 }
             });
@@ -17,4 +17,4 @@ window.onload = function() {
             titleBox.focus();
         });
     });
-}
+};
