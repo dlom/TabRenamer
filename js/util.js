@@ -46,7 +46,9 @@ var getFavicon = function(url) {
 };
 
 var changeFavicon = function(url, title, tabId) {
-    if (tabId == null) tabId = null; // Testing if null *or* undefined
+    if (tabId == null) {
+        tabId = null;
+    }
     url = getFavicon(url);
     chrome.tabs.executeScript(tabId, {
         "file": "favicon.js/favicon.min.js"
@@ -70,11 +72,11 @@ var createInput = function(id, type, value) {
 var createSelect = function(id, options) {
     var select = document.createElement("select");
     select.id = id;
-    for (key in options) {
-        if (options.hasOwnProperty(key)) {
+    for (var name in options) {
+        if (options.hasOwnProperty(name)) {
             var option = document.createElement("option");
-            option.value = options[key];
-            option.appendChild(document.createTextNode(key));
+            option.value = options[name];
+            option.appendChild(document.createTextNode(name));
             select.appendChild(option);
         }
     }
