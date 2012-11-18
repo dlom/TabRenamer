@@ -1,6 +1,12 @@
 var storage = new Store("tabrenamer", storageDefaults);
 
+var ready = false;
+
 var initialize = function() {
+    if (ready) {
+        return;
+    }
+    ready = true;
     setPopup(!(storage.get("type") === "quickChange"));
     chrome.extension.onMessage.addListener(function(message, sender, callback) {
         switch (message.action) {
@@ -24,3 +30,7 @@ var initialize = function() {
 };
 
 storage.loadSync(initialize);
+
+chrome.runtime.onStartup.addListener(function() {
+    storage.loadSync(initialize);
+});
