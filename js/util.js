@@ -24,10 +24,6 @@ var setPopup = function(enabled) {
     }
 };
 
-var isQuickChangeEnabled = function() {
-    return (storage.get("type") === "quickChange");
-};
-
 var changeFaviconQuick = function(tabId) {
     changeFavicon(storage.get("quickFavicon"), storage.get("quickTitle"), tabId);
 };

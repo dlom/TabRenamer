@@ -1,7 +1,7 @@
 var storage = new Store("tabrenamer", storageDefaults);
 
 var initialize = function() {
-    setPopup(!isQuickChangeEnabled());
+    setPopup(!(storage.get("type") === "quickChange"));
     chrome.extension.onMessage.addListener(function(message, sender, callback) {
         switch (message.action) {
         case "rename":
@@ -13,7 +13,7 @@ var initialize = function() {
         case "getQuickChangeOptions":
             callback({
                 "key": parseInt(storage.get("shortcutKey"), 10),
-                "enabled": isQuickChangeEnabled()
+                "enabled": (storage.get("type") === "quickChange")
             });
             break;
         }
