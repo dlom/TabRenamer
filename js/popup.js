@@ -13,7 +13,7 @@ window.addEventListener("load", function() {
             });
 
             titleBox.addEventListener("keyup", function(e) {
-                changeFavicon(storage.get("keepFavicon") ? "" : "blank", titleBox.value.replace("'", "\\'"), t.id);
+                changeFavicon(storage.get("keepFavicon") ? "" : "blank", titleBox.value, t.id);
             });
 
             titleBox.focus();

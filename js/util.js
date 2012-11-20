@@ -41,6 +41,10 @@ var getFavicon = function(url) {
     }
 };
 
+var sanitize = function(dirty) {
+    return dirty.replace(/'/g, "\\'");
+}
+
 var changeFavicon = function(url, title, tabId) {
     if (tabId == null) {
         tabId = null;
@@ -50,7 +54,7 @@ var changeFavicon = function(url, title, tabId) {
         "file": "favicon.js/favicon.min.js"
     }, function() {
         chrome.tabs.executeScript(tabId, {
-            "code": "favicon.change('" + url + "', '" + title + "');"
+            "code": "favicon.change('" + sanitize(url) + "', '" + sanitize(title) + "');"
         });
     });
 };
