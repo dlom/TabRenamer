@@ -15,7 +15,14 @@ h1, h2 {
     display: none;
 }
 
+#manualOrQuick {
+    margin-left: 40px;
+}
+
 #quickFaviconTestImage {
     width: 16px;
     height: 16px;
+    vertical-align: text-bottom;
+    padding-left: 5px;
+    padding-right: 5px;
 }
