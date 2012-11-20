@@ -97,3 +97,35 @@ var createLabel = function(elementFor, text, helpText) {
     }
     return label;
 };
+
+var typingIntervals = {};
+
+var addTypingHandlers = function(input, handler) {
+    typingIntervals[input.id] = {
+        "e": null,
+        "interval": null
+    }
+    input.addEventListener("keyup", function(e) {
+        var keyPressed = e.key || e.keyCode || e.which;
+        clearTimeout(typingIntervals[input.id].interval);
+        if (keyPressed !== keyEnter) {
+            typingIntervals[input.id] = {
+                "e": e,
+                "interval": setTimeout(function() {
+                    handler(e);
+                }, 1000)
+            }
+        } else {
+            handler(e);
+        }
+    });
+
+    input.addEventListener("keydown", function() {
+        clearTimeout(typingIntervals[input.id].interval);
+    });
+
+    input.addEventListener("blur", function() {
+        clearTimeout(typingIntervals[input.id].interval);
+        handler(typingIntervals[input.id].e);
+    });
+};

@@ -1,11 +1,10 @@
 var storage = new Store("tabrenamer", storageDefaults);
 
-var save = function(key, value, callback) {
+var save = function(key, value) {
     setStatus("Saving...");
     storage.set(key, value);
     storage.saveSync(function() {
         setStatus("Saved", 500);
-        callback && callback();
     });
 };
 
@@ -21,8 +20,7 @@ var drawOptions = function(parent) {
     parent.appendChild(document.createElement("hr"));
     setStatus("Loading...");
     drawTypeOptions(parent);
-    drawSyncSaveButton(parent);
-    drawSyncLoadButton(parent);
+    drawShowAdvanced(parent);
     setStatus("Loaded", 1000);
 };
 
@@ -36,7 +34,7 @@ var drawStatusBar = function(parent) {
 
 var statusTimeout;
 
-var setStatus = function(text, timeout) {
+var setStatus = function(text, timeout, callback) {
     var status = document.getElementById("status");
     if (text == null) {
         status.innerText = "Tab Renamer Options";
@@ -113,13 +111,17 @@ var drawQuickChangeOptions = function(parent) {
     var shortcutKeyLabel = createLabel("shortcutKey", "Shortcut Key: ");
 
     var quickTitle = createInput("quickTitle", "text", storage.get("quickTitle"));
-    addTypingHandlers(quickTitle);
+    addTypingHandlers(quickTitle, function() {
+        save(quickTitle.id, quickTitle.value);
+    });
 
     var quickTitleLabel = createLabel("quickTitle", "Quick Change Title: ");
 
     var quickFavicon = createInput("quickFavicon", "text", storage.get("quickFavicon"));
-    quickFavicon.addEventListener("keydown", quickFaviconHandler);
-    addTypingHandlers(quickFavicon);
+    addTypingHandlers(quickFavicon, function() {
+        quickFaviconTestButtonHandler();
+        save(quickFavicon.id, quickFavicon.value);
+    });
 
     var quickFaviconLabel = createLabel("quickFavicon", "Site's Favicon: ", "Example: 'http://google.com'.  For a default blank favicon, use 'blank'.  For the same favicon, use '' (Nothing)");
 
@@ -131,6 +133,7 @@ var drawQuickChangeOptions = function(parent) {
 
     parent.appendChild(shortcutKeyLabel);
     parent.appendChild(shortcutKey);
+    parent.appendChild(document.createElement("br"));
     parent.appendChild(quickTitleLabel);
     parent.appendChild(quickTitle);
     parent.appendChild(document.createElement("br"));
@@ -146,13 +149,6 @@ var shortcutKeyHandler = function() {
     save("shortcutKey", this.value);
 };
 
-var quickFaviconHandler = function(e) {
-    var keyPressed = e.key || e.keyCode || e.which;
-    if (keyPressed === keyEnter) {
-        quickFaviconTestButtonHandler();
-    }
-};
-
 var quickFaviconTestButtonHandler = function() {
     var value = document.getElementById("quickFavicon").value;
     var image = document.getElementById("quickFaviconTestImage");
@@ -161,6 +157,29 @@ var quickFaviconTestButtonHandler = function() {
     } else {
         image.src = getFavicon(value);
         image.classList.remove("hidden");
+    }
+};
+
+var drawShowAdvanced = function(parent) {
+    showAdvanced = createInput("showAdvanced", "checkbox");
+    showAdvanced.addEventListener("click", showAdvancedHandler);
+
+    showAdvancedLabel = createLabel("showAdvanced", "Show Advanced Options");
+
+    var advancedOptions = document.createElement("div");
+    advancedOptions.id = "advancedOptions";
+
+    parent.appendChild(showAdvanced);
+    parent.appendChild(showAdvancedLabel);
+    parent.appendChild(advancedOptions);
+};
+
+var showAdvancedHandler = function() {
+    var advancedOptions = document.getElementById("advancedOptions");
+    advancedOptions.innerHTML = "";
+    if (this.checked) {
+        drawSyncSaveButton(advancedOptions);
+        drawSyncLoadButton(advancedOptions);
     }
 };
 
@@ -188,27 +207,6 @@ var drawSyncLoadButton = function(parent) {
 var syncLoadHandler = function() {
     setStatus("Loading synced settings...");
     storage.loadSync(initialize);
-};
-
-var typingIntervals = {};
-
-var addTypingHandlers = function(input) {
-    typingIntervals[input.id] = null;
-    input.addEventListener("keyup", function() {
-        clearTimeout(typingIntervals[input.id]);
-        typingIntervals[input.id] = setTimeout(function() {
-            save(input.id, input.value);
-        }, 1000);
-    });
-
-    input.addEventListener("keydown", function() {
-        clearTimeout(typingIntervals[input.id]);
-    });
-
-    input.addEventListener("blur", function() {
-        clearTimeout(typingIntervals[input.id]);
-        save(input.id, input.value);
-    });
 };
 
 window.addEventListener("load", initialize);
