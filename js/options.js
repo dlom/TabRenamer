@@ -75,9 +75,8 @@ var typeHandler = function() {
     } else if (this.value === "quickChange") {
         drawQuickChangeOptions(manualOrQuick);
     }
-    save("type", this.value, function() {
-        setPopup(!(storage.get("type") === "quickChange"));
-    });
+    setPopup(this.value !== "quickChange");
+    save("type", this.value);
 };
 
 var drawManualOptions = function(parent) {

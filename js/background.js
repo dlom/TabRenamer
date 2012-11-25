@@ -7,7 +7,7 @@ var initialize = function() {
         return;
     }
     ready = true;
-    setPopup(!(storage.get("type") === "quickChange"));
+    setPopup(storage.get("type") !== "quickChange");
     chrome.extension.onMessage.addListener(function(message, sender, callback) {
         switch (message.action) {
         case "rename":
