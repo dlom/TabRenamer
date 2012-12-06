@@ -46,6 +46,7 @@ var addTypingHandlers = function(input, handler) {
     input.addEventListener("keyup", function(e) {
         var keyPressed = e.key || e.keyCode || e.which;
         clearTimeout(typingInterval.interval);
+        typingInterval.interval = null;
         if (keyPressed !== KEY_ENTER) {
             typingInterval = {
                 "e": e,
@@ -60,10 +61,14 @@ var addTypingHandlers = function(input, handler) {
 
     input.addEventListener("keydown", function() {
         clearTimeout(typingInterval.interval);
+        typingInterval.interval = null;
     });
 
     input.addEventListener("blur", function() {
         clearTimeout(typingInterval.interval);
-        handler(typingInterval.e);
+        if (typingInterval.interval != null) {
+            handler(typingInterval.e);
+        }
+        typingInterval.interval = null;
     });
 };
