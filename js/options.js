@@ -49,8 +49,8 @@ var setStatus = function(text, timeout, callback) {
 
 var drawTypeOptions = function(parent) {
     var type = createSelect("type", {
-        "Manual": "manual",
-        "Quick Change": "quickChange"
+        "manual": "Manual",
+        "quickChange": "Quick Change"
     });
     type.value = storage.get("type");
     type.addEventListener("change", typeHandler);
@@ -96,19 +96,70 @@ var keepFaviconHandler = function() {
 
 var drawQuickChangeOptions = function(parent) {
     var shortcutKey = createSelect("shortcutKey", {
-        "None": -10000,
-        "F2": 113,
-        "F4": 115,
-        "F7": 118,
-        "F8": 119,
-        "F9": 120,
-        "F10": 121
+        "-10000": "None",
+        "113": "F2",
+        "115": "F4",
+        "118": "F7",
+        "119": "F8",
+        "120": "F9",
+        "121": "F10"
     });
     shortcutKey.value = storage.get("shortcutKey");
     shortcutKey.addEventListener("change", shortcutKeyHandler);
 
     var shortcutKeyLabel = createLabel("shortcutKey", "Shortcut Key: ");
 
+    var preset = createInput("preset", "checkbox");
+    preset.checked = storage.get("preset");
+    preset.addEventListener("change", presetHandler);
+
+    var presetLabel = createLabel("preset", "Use presets");
+
+    var presetOrNot = document.createElement("div");
+    presetOrNot.id = "presetOrNot";
+
+    parent.appendChild(shortcutKeyLabel);
+    parent.appendChild(shortcutKey);
+    parent.appendChild(document.createElement("br"));
+    parent.appendChild(preset);
+    parent.appendChild(presetLabel);
+    parent.appendChild(presetOrNot);
+
+    presetHandler.apply(preset);
+};
+
+var shortcutKeyHandler = function() {
+    save("shortcutKey", this.value);
+};
+
+var presetHandler = function() {
+    var presetOrNot = document.getElementById("presetOrNot");
+    presetOrNot.innerHTML = "";
+    if (this.checked) {
+        drawQuickPresetOptions(presetOrNot);
+    } else {
+        drawQuickNonPresetOptions(presetOrNot);
+    }
+    save("preset", this.checked);
+};
+
+var drawQuickPresetOptions = function(parent) {
+    var selectedPreset = createSelect("selectedPreset", presets);
+    selectedPreset.value = storage.get("selectedPreset");
+    selectedPreset.addEventListener("change", selectedPresetHandler);
+
+
+    var selectedPresetLabel = createLabel("selectedPreset", "Selected Preset: ");
+
+    parent.appendChild(selectedPresetLabel);
+    parent.appendChild(selectedPreset);
+};
+
+var selectedPresetHandler = function() {
+    save("selectedPreset", this.value);
+};
+
+var drawQuickNonPresetOptions = function(parent) {
     var quickTitle = createInput("quickTitle", "text", storage.get("quickTitle"));
     addTypingHandlers(quickTitle, function() {
         save(quickTitle.id, quickTitle.value);
@@ -130,9 +181,6 @@ var drawQuickChangeOptions = function(parent) {
     var quickFaviconTestButton = createInput("quickFaviconTestButton", "button", "Test");
     quickFaviconTestButton.addEventListener("click", quickFaviconTestButtonHandler);
 
-    parent.appendChild(shortcutKeyLabel);
-    parent.appendChild(shortcutKey);
-    parent.appendChild(document.createElement("br"));
     parent.appendChild(quickTitleLabel);
     parent.appendChild(quickTitle);
     parent.appendChild(document.createElement("br"));
@@ -142,10 +190,6 @@ var drawQuickChangeOptions = function(parent) {
     parent.appendChild(quickFaviconTestButton);
 
     quickFaviconTestButtonHandler.apply(quickFaviconTestButton);
-};
-
-var shortcutKeyHandler = function() {
-    save("shortcutKey", this.value);
 };
 
 var quickFaviconTestButtonHandler = function() {

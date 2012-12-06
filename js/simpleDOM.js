@@ -12,11 +12,15 @@ var createInput = function(id, type, value) {
 var createSelect = function(id, options) {
     var select = document.createElement("select");
     select.id = id;
-    for (var name in options) {
-        if (options.hasOwnProperty(name)) {
+    for (var value in options) {
+        if (options.hasOwnProperty(value)) {
+            var text = options[value];
+            if (text.hasOwnProperty("text")) {
+                text = text.text;
+            }
             var option = document.createElement("option");
-            option.value = options[name];
-            option.appendChild(document.createTextNode(name));
+            option.value = value;
+            option.appendChild(document.createTextNode(text));
             select.appendChild(option);
         }
     }

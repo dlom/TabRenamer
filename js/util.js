@@ -4,7 +4,27 @@ var storageDefaults = {
     "keepFavicon": false,
     "quickTitle": "",
     "quickFavicon": "blank",
-    "shortcutKey": "-10000"
+    "shortcutKey": "-10000",
+    "preset": false,
+    "selectedPreset": "wikipedia"
+};
+
+var presets = {
+    "wikipedia": {
+        "text": "Wikipedia",
+        "title": "Wikipedia, the free encyclopedia",
+        "favicon": "en.wikipedia.org"
+    },
+    "google": {
+        "text": "Google",
+        "title": "Google",
+        "favicon": "google.com"
+    },
+    "cnn": {
+        "text": "CNN",
+        "title": "CNN.com - Breaking News, U.S., World, Weather, Entertainment & Video News",
+        "favicon": "cnn.com"
+    }
 };
 
 var KEY_ENTER = 13;
@@ -24,7 +44,17 @@ var setPopup = function(enabled) {
 };
 
 var changeFaviconQuick = function(tabId) {
-    changeFavicon(storage.get("quickFavicon"), storage.get("quickTitle"), tabId);
+    var url;
+    var title;
+    if (storage.get("preset")) {
+        var preset = presets[storage.get("selectedPreset")];
+        url = preset.favicon;
+        title = preset.title;
+    } else {
+        url = storage.get("quickFavicon");
+        title = storage.get("quickTitle");
+    }
+    changeFavicon(url, title, tabId);
 };
 
 var getFavicon = function(url) {
