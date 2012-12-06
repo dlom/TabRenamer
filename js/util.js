@@ -9,7 +9,7 @@ var storageDefaults = {
 
 var KEY_ENTER = 13;
 
-var l = function(x) { console.log (x); };
+var l = function() { console.log.apply(console, arguments); };
 
 var setPopup = function(enabled) {
     if (enabled) {
