@@ -89,32 +89,4 @@
         }
         return this;
     };
-
-    Store.prototype.saveSync = function(callback) {
-        var that = this;
-        chrome.storage.sync.set(this.toObject(), function() {
-            callback && callback(that);
-        });
-    };
-
-    Store.prototype.loadSync = function(defaults, merge, callback) {
-        var that = this;
-        if (typeof defaults === "function" && merge == null && callback == null) {
-            callback = defaults;
-            merge = true;
-            defaults = {};
-        }
-        if (typeof merge === "function" && callback == null) {
-            callback = merge;
-            merge = true;
-            if (typeof defaults === "boolean") {
-                merge = defaults;
-                defaults = {};
-            }
-        }
-        chrome.storage.sync.get(defaults, function(values) {
-            that.fromObject(values, merge, true);
-            callback && callback(that);
-        });
-    };
 }());

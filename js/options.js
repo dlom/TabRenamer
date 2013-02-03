@@ -3,9 +3,7 @@ var storage = new Store("tabrenamer", storageDefaults);
 var save = function(key, value) {
     setStatus("Saving...");
     storage.set(key, value);
-    storage.saveSync(function() {
-        setStatus("Saved", 500);
-    });
+    setStatus("Saved", 500);
 };
 
 var initialize = function() {
@@ -173,7 +171,7 @@ var drawQuickNonPresetOptions = function(parent) {
         save(quickFavicon.id, quickFavicon.value);
     });
 
-    var quickFaviconLabel = createLabel("quickFavicon", "Site's Favicon: ", "Example: 'http://google.com'.  For a default blank favicon, use 'blank'.  For the same favicon, use '' (Nothing)");
+    var quickFaviconLabel = createLabel("quickFavicon", "Site's Favicon: ", "Example: 'http://google.com'.  For a default blank favicon, use 'blank'.  To not change the favicon, use '' (Nothing)");
 
     var quickFaviconTestImage = document.createElement("img");
     quickFaviconTestImage.id = "quickFaviconTestImage";
@@ -227,7 +225,7 @@ var showAdvancedHandler = function() {
 };
 
 var drawSyncSaveButton = function(parent) {
-    var syncSave = createInput("syncSave", "button", "Force Sync Settings");
+    var syncSave = createInput("syncSave", "button", "Sync Settings");
     syncSave.addEventListener("click", syncSaveHandler);
 
     parent.appendChild(syncSave);
@@ -235,13 +233,13 @@ var drawSyncSaveButton = function(parent) {
 
 var syncSaveHandler = function() {
     setStatus("Syncing settings...");
-    storage.saveSync(function() {
+    chrome.storage.sync.set(storage.toObject(), function() {
         setStatus("Settings synced", 500);
     });
 };
 
 var drawSyncLoadButton = function(parent) {
-    var syncLoad = createInput("syncLoad", "button", "Force Load Synced Settings");
+    var syncLoad = createInput("syncLoad", "button", "Load Synced Settings");
     syncLoad.addEventListener("click", syncLoadHandler);
 
     parent.appendChild(syncLoad);
@@ -249,7 +247,10 @@ var drawSyncLoadButton = function(parent) {
 
 var syncLoadHandler = function() {
     setStatus("Loading synced settings...");
-    storage.loadSync(initialize);
+    chrome.storage.sync.get({}, function(values) {
+        storage.fromObject(values, true, true);
+        initialize();
+    });
 };
 
 window.addEventListener("load", initialize);
