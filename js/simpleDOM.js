@@ -1,4 +1,3 @@
-
 var createInput = function(id, type, value) {
     var input = document.createElement("input");
     input.id = id;
@@ -43,16 +42,16 @@ var createLabel = function(elementFor, text, helpText) {
 };
 
 var addTypingHandlers = function(input, handler) {
-    var typingInterval = {
+    var state = {
         "e": null,
         "interval": null
     };
     input.addEventListener("keyup", function(e) {
         var keyPressed = e.key || e.keyCode || e.which;
-        clearTimeout(typingInterval.interval);
-        typingInterval.interval = null;
+        clearTimeout(state.interval);
+        state.interval = null;
         if (keyPressed !== KEY_ENTER) {
-            typingInterval = {
+            state = {
                 "e": e,
                 "interval": setTimeout(function() {
                     handler(e);
@@ -64,15 +63,15 @@ var addTypingHandlers = function(input, handler) {
     });
 
     input.addEventListener("keydown", function() {
-        clearTimeout(typingInterval.interval);
-        typingInterval.interval = null;
+        clearTimeout(state.interval);
+        state.interval = null;
     });
 
     input.addEventListener("blur", function() {
-        clearTimeout(typingInterval.interval);
-        if (typingInterval.interval != null) {
-            handler(typingInterval.e);
+        clearTimeout(state.interval);
+        if (state.interval != null) {
+            handler(state.e);
         }
-        typingInterval.interval = null;
+        state.interval = null;
     });
 };

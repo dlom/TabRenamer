@@ -73,7 +73,7 @@ var typeHandler = function() {
     } else if (this.value === "quickChange") {
         drawQuickChangeOptions(manualOrQuick);
     }
-    setPopup(this.value !== "quickChange");
+    setPopupEnabled(this.value !== "quickChange");
     save("type", this.value);
 };
 
@@ -94,7 +94,7 @@ var keepFaviconHandler = function() {
 
 var drawQuickChangeOptions = function(parent) {
     var shortcutKey = createSelect("shortcutKey", {
-        "-10000": "None",
+        "-10000000": "None",
         "113": "F2",
         "115": "F4",
         "118": "F7",
@@ -196,7 +196,7 @@ var quickFaviconTestButtonHandler = function() {
     if (value === "") {
         image.classList.add("hidden");
     } else {
-        image.src = getFavicon(value);
+        image.src = getFaviconFromURL(value);
         image.classList.remove("hidden");
     }
 };

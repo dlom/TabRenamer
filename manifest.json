@@ -8,10 +8,6 @@
         "16": "images/16.png",
         "48": "images/48.png"
     },
-    /*"browser_action": {
-        "default_icon":"images/48.png",
-        "default_title":"Rename Tab"
-    },*/
     "background": {
         "scripts": [
             "js/util.js",

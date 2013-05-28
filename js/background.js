@@ -1,12 +1,31 @@
+var detectOldVersion = function() {
+    return localStorage.getItem("store.settings.version") != null;
+}
+
+var convertOldSettings = function() {
+    return {
+        "faviconEndpoint": "http://g.etfv.co/",
+        "type": JSON.parse(localStorage.getItem("store.settings.selectedType")),
+        "keepFavicon": JSON.parse(localStorage.getItem("store.settings.keepFavicon")),
+        "quickTitle": JSON.parse(localStorage.getItem("store.settings.quickTitle")),
+        "quickFavicon": JSON.parse(localStorage.getItem("store.settings.quickFavicon")),
+        "shortcutKey": JSON.parse(localStorage.getItem("store.settings.shortcutKey")),
+        "preset": JSON.parse(localStorage.getItem("store.settings.presets")),
+        "selectedPreset": JSON.parse(localStorage.getItem("store.settings.selectedPreset"))
+    };
+}
+
 var storage = new Store("tabrenamer", storageDefaults);
+if (detectOldVersion()) {
+    oldSettings = convertOldSettings();
+    localStorage.clear();
+    storage.fromObject(oldSettings, false, true);
+}
 
 var initialize = function() {
-    setPopup(storage.get("type") !== "quickChange");
-    chrome.extension.onMessage.addListener(function(message, sender, callback) {
+    setPopupEnabled(storage.get("type") !== "quickChange");
+    chrome.runtime.onMessage.addListener(function(message, sender, callback) {
         switch (message.action) {
-        case "rename":
-            changeFavicon(message.url, message.title, sender.tab.id);
-            break;
         case "quickRename":
             changeFaviconQuick(sender.tab.id);
             break;

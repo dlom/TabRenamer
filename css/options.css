@@ -3,7 +3,7 @@ h1, h2 {
 }
 
 .help {
-    border-bottom: 1px dotted;
+    border-bottom: 1px dotted #000;
     cursor: help;
 }
 

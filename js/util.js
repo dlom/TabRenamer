@@ -4,7 +4,7 @@ var storageDefaults = {
     "keepFavicon": false,
     "quickTitle": "",
     "quickFavicon": "blank",
-    "shortcutKey": "-10000",
+    "shortcutKey": "-10000000",
     "preset": false,
     "selectedPreset": "wikipedia"
 };
@@ -24,6 +24,11 @@ var presets = {
         "text": "CNN",
         "title": "CNN.com - Breaking News, U.S., World, Weather, Entertainment & Video News",
         "favicon": "cnn.com"
+    },
+    "yahoo": {
+        "text": "Yahoo",
+        "title": "Yahoo!",
+        "favicon": "yahoo.com"
     }
 };
 
@@ -31,7 +36,7 @@ var KEY_ENTER = 13;
 
 var l = function() { console.log.apply(console, arguments); };
 
-var setPopup = function(enabled) {
+var setPopupEnabled = function(enabled) {
     if (enabled) {
         chrome.browserAction.setPopup({
             popup: "html/popup.html"
@@ -57,7 +62,7 @@ var changeFaviconQuick = function(tabId) {
     changeFavicon(url, title, tabId);
 };
 
-var getFavicon = function(url) {
+var getFaviconFromURL = function(url) {
     if (url === "") {
         return "";
     } else if (url === "blank") {
@@ -76,9 +81,9 @@ var sanitize = function(dirty) {
 
 var changeFavicon = function(url, title, tabId) {
     if (tabId == null) {
-        tabId = null;
+        tabId = null; // Seems wat-worthy, but in actuallity, sets tabId to null if undefined
     }
-    url = getFavicon(url);
+    url = getFaviconFromURL(url);
     chrome.tabs.executeScript(tabId, {
         "file": "favicon.js/favicon.min.js"
     }, function() {

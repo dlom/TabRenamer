@@ -1,5 +1,5 @@
 var changeFavicon = function() {
-    chrome.extension.sendMessage({
+    chrome.runtime.sendMessage({
         "action": "quickRename"
     });
 };
@@ -19,15 +19,13 @@ var changeFavicon = function() {
  *  f12: 123  Toggle Dev Tools
 \*/
 
-var onKeyUp = function(e) {
-    chrome.extension.sendMessage({
+window.addEventListener("keyup", function(e) {
+    chrome.runtime.sendMessage({
         "action": "getQuickChangeOptions"
     }, function(response) {
         var keyPressed = e.key || e.keyCode || e.which;
-        if (keyPressed === response.key && response.enabled) {
+        if (response.enabled && keyPressed === response.key) {
             changeFavicon();
         }
     });
-};
-
-window.addEventListener("keyup", onKeyUp);
+});
