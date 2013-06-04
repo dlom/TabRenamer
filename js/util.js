@@ -105,13 +105,10 @@ var changeFavicon = function(url, title, tabId) {
 
 var handleAuto = function(location, tabId) {
     var autoData = storage.get("autoData");
-    l(autoData.length);
     for (var i = 0; i < autoData.length; i++) {
         var regex = autoData[i].match;
         if (!autoData[i].isRegex) regex = "/" + regex.replace(/([\\\+\|\{\}\[\]\(\)\^\$\.\#])/g, "\\$1").replace(/\*/g, ".*").replace(/\?/g, ".") + "/";
-        l(regex, i);
         var parsedRegex = parseRegex(regex);
-        l(parsedRegex, i);
         if (parsedRegex == null) {
             console.error("Malformed RegExp `" + regex + "`!", i);
             return;
