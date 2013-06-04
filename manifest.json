@@ -10,8 +10,8 @@
     },
     "background": {
         "scripts": [
-            "js/util.js",
             "js/store.js",
+            "js/util.js",
             "js/background.js"
         ],
         "persistent": false

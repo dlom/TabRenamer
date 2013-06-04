@@ -1,5 +1,3 @@
-var storage = new Store("tabrenamer", storageDefaults);
-
 var getWindowAndTab = function(callback) {
     chrome.windows.getCurrent(function(w) {
         chrome.tabs.getSelected(w.id, function (t) {

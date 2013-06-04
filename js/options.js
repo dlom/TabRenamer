@@ -1,5 +1,3 @@
-var storage = new Store("tabrenamer", storageDefaults);
-
 var save = function(key, value) {
     setStatus("Saving...");
     storage.set(key, value);
@@ -18,6 +16,9 @@ var drawOptions = function(parent) {
     parent.appendChild(document.createElement("hr"));
     setStatus("Loading...");
     drawTypeOptions(parent);
+    parent.appendChild(document.createElement("hr"));
+    drawAutoOptions(parent);
+    parent.appendChild(document.createElement("hr"));
     drawShowAdvanced(parent);
     setStatus("Loaded", 1000);
 };
@@ -252,5 +253,9 @@ var syncLoadHandler = function() {
         initialize();
     });
 };
+
+var drawAutoOptions = function(parent) {
+    parent.appendChild(document.createTextNode("auto heyooooooo"));
+}
 
 window.addEventListener("load", initialize);

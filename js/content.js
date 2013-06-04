@@ -29,3 +29,8 @@ window.addEventListener("keyup", function(e) {
         }
     });
 });
+
+chrome.runtime.sendMessage({
+    "action": "init",
+    "location": location
+});

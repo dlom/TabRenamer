@@ -6,8 +6,19 @@ var storageDefaults = {
     "quickFavicon": "blank",
     "shortcutKey": "-10000000",
     "preset": false,
-    "selectedPreset": "wikipedia"
+    "selectedPreset": "wikipedia",
+    "autoData": [{
+        "isRegex": true,
+        "match": "/.*google.com\\/?.*/",
+        "replace": "GOOGLE SUX"
+    }, {
+        "isRegex": false,
+        "match": "*github*",
+        "replace": "GITHUB 4 LYFE"
+    }]
 };
+
+var storage = new Store("tabrenamer", storageDefaults);
 
 var presets = {
     "wikipedia": {
@@ -49,8 +60,7 @@ var setPopupEnabled = function(enabled) {
 };
 
 var changeFaviconQuick = function(tabId) {
-    var url;
-    var title;
+    var url, title;
     if (storage.get("preset")) {
         var preset = presets[storage.get("selectedPreset")];
         url = preset.favicon;
@@ -91,4 +101,39 @@ var changeFavicon = function(url, title, tabId) {
             "code": "favicon.change('" + sanitize(url) + "', '" + sanitize(title) + "');"
         });
     });
+};
+
+var handleAuto = function(location, tabId) {
+    var autoData = storage.get("autoData");
+    l(autoData.length);
+    for (var i = 0; i < autoData.length; i++) {
+        var regex = autoData[i].match;
+        if (!autoData[i].isRegex) regex = "/" + regex.replace(/([\\\+\|\{\}\[\]\(\)\^\$\.\#])/g, "\\$1").replace(/\*/g, ".*").replace(/\?/g, ".") + "/";
+        l(regex, i);
+        var parsedRegex = parseRegex(regex);
+        l(parsedRegex, i);
+        if (parsedRegex == null) {
+            console.error("Malformed RegExp `" + regex + "`!", i);
+            return;
+        }
+        var match = parsedRegex.exec(location.href);
+        if (match != null) {
+            changeFavicon("", autoData[i].replace, tabId);
+        }
+    }
+};
+
+var parseRegex = function(regex) {
+    // Taken and adapted from the source of coffee-script
+    var regexRegex = /^(\/(?![\s=])[^[\/\n\\]*(?:(?:\\[\s\S]|\[[^\]\n\\]*(?:\\[\s\S][^\]\n\\]*)*])[^[\/\n\\]*)*\/)([imgy]{0,4})(?!\w)/;
+    var match = regexRegex.exec(regex);
+    if (match == null) return null;
+    if (match[1] === "//") match[1] = "/(?:)/";
+    var parsedRegex;
+    try {
+        parsedRegex = new RegExp(match[1].slice(1, match[1].length - 1), match[2]);
+    } catch(e) {
+        parsedRegex = null;
+    }
+    return parsedRegex;
 };

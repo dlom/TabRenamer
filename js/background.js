@@ -15,7 +15,6 @@ var convertOldSettings = function() {
     };
 }
 
-var storage = new Store("tabrenamer", storageDefaults);
 if (detectOldVersion()) {
     oldSettings = convertOldSettings();
     localStorage.clear();
@@ -34,6 +33,9 @@ var initialize = function() {
                 "key": parseInt(storage.get("shortcutKey"), 10),
                 "enabled": (storage.get("type") === "quickChange")
             });
+            break;
+        case "init":
+            handleAuto(message.location, sender.tab.id);
             break;
         }
     });
