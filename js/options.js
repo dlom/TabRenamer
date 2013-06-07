@@ -280,35 +280,43 @@ var drawAutoMatches = function(parent) {
     var autoMatchesHeader = document.createElement("h2");
     autoMatchesHeader.appendChild(document.createTextNode("Auto Options"));
 
+    var autoEnabler = createInput("autoEnabler", "button", (storage.get("autoEnabled") ? "Disable" : "Enable"))
+    autoEnabler.addEventListener("click", autoEnablerHandler);
+
     var autoMatches = document.createElement("ul");
     autoMatches.id = "autoMatches";
 
     var autoData = storage.get("autoData");
+    autoData = autoData.filter(function(elem) {
+        return !elem.equals(defaultAutoMatch);
+    });
+    save("autoData", autoData);
     if (autoData.length === 0) {
-        autoData.push({
-            "isRegexMatch": false,
-            "isRegexReplace": false,
-            "match": "",
-            "replace": "",
-            "regexReplace": {
-                "match": "",
-                "replace": ""
-            }
-        });
+        autoData.push(defaultAutoMatch);
         save("autoData", autoData);
 
-        drawAutoMatch(autoMatches, autoData[0], 0, 1);
+        drawAutoMatch(autoMatches, autoData[0], 0, 1, storage.get("autoEnabled"));
     } else {
         for (var i = 0; i < autoData.length; i++) {
-            drawAutoMatch(autoMatches, autoData[i], i, autoData.length);
+            drawAutoMatch(autoMatches, autoData[i], i, autoData.length, storage.get("autoEnabled"));
         }
     }
 
     parent.appendChild(autoMatchesHeader);
+    parent.appendChild(autoEnabler);
     parent.appendChild(autoMatches);
 };
 
-var drawAutoMatch = function(parent, auto, num, length) {
+var autoEnablerHandler = function() {
+    var autoEnabled = storage.get("autoEnabled");
+    save("autoEnabled", !autoEnabled);
+
+    var autoOptions = document.getElementById("autoOptions");
+    autoOptions.innerHTML = "";
+    drawAutoMatches(autoOptions);
+};
+
+var drawAutoMatch = function(parent, auto, num, length, enabled) {
     var autoMatch = document.createElement("li");
     autoMatch.dataset.matchNum = num;
     autoMatch.classList.add("autoMatch");
@@ -321,10 +329,12 @@ var drawAutoMatch = function(parent, auto, num, length) {
     });
     autoMatchMatchType.value = (auto.isRegexMatch) ? "regex" : "wildcard";
     autoMatchMatchType.classList.add("autoMatchMatchType");
+    autoMatchMatchType.disabled = !enabled;
     autoMatchMatchType.addEventListener("change", autoMatchMatchTypeHandler);
 
     var autoMatchMatch = createInputNoId("text", auto.match);
     autoMatchMatch.classList.add("autoMatchMatch");
+    autoMatchMatch.disabled = !enabled;
     autoMatchMatch.placeholder = (auto.isRegexMatch) ? "/google/g" : "*google*";
     addTypingHandlers(autoMatchMatch, function() {
         // TODO validate
@@ -346,10 +356,38 @@ var drawAutoMatch = function(parent, auto, num, length) {
     autoMatchReplaceType.classList.add("autoMatchReplaceType");
     autoMatchReplaceType.addEventListener("change", autoMatchReplaceTypeHandler);
 
-    var infoText3 = document.createTextNode(" it with ");
+    var infoText3 = document.createTextNode(" the title with ");
+
+    var infoText4 = document.createTextNode(" and the favicon with ");
+
+    var autoMatchFavicon = createInputNoId("text", auto.favicon);
+    autoMatchFavicon.classList.add("autoMatchFavicon");
+    autoMatchFavicon.disabled = !enabled;
+    addTypingHandlers(autoMatchFavicon, function() {
+        var parent = this.parentElement;
+        var autoData = storage.get("autoData");
+        autoData[parent.dataset.matchNum].favicon = this.value;
+
+        autoMatchFaviconButtonHandler.apply(autoMatchFaviconButton);
+
+        save("autoData", autoData);
+    });
+
+    var autoMatchFaviconImage = document.createElement("img");
+    autoMatchFaviconImage.classList.add("autoMatchFaviconImage");
+
+    var autoMatchFaviconButton = createInputNoId("button", "Test");
+    autoMatchFaviconButton.classList.add("autoMatchFaviconButton");
+    autoMatchFaviconButton.disabled = !enabled;
+    autoMatchFaviconButton.addEventListener("click", autoMatchFaviconButtonHandler);
+
+    var autoMatchSeparator = document.createElement("span");
+    autoMatchSeparator.appendChild(document.createTextNode("|"));
+    autoMatchSeparator.classList.add("separator");
 
     var autoMatchRemove = createInputNoId("button", "Remove");
     autoMatchRemove.classList.add("autoMatchRemove");
+    autoMatchRemove.disabled = !enabled;
     autoMatchRemove.addEventListener("click", autoMatchRemoveHandler);
 
     autoMatch.appendChild(infoText1);
@@ -358,15 +396,23 @@ var drawAutoMatch = function(parent, auto, num, length) {
     autoMatch.appendChild(infoText2);
     autoMatch.appendChild(autoMatchReplaceType);
     autoMatch.appendChild(infoText3);
+    autoMatch.appendChild(autoMatchFavicon);
+    autoMatch.appendChild(autoMatchFaviconImage);
+    autoMatch.appendChild(autoMatchFaviconButton);
+    autoMatch.appendChild(autoMatchSeparator);
     autoMatch.appendChild(autoMatchRemove);
-    drawAutoMatchReplaceOptions(autoMatch, auto); // hax
+    drawAutoMatchReplaceOptions(autoMatch, auto, enabled); // hax
+    autoMatch.insertBefore(infoText4, autoMatchFavicon); // oh god the hax
 
     if (num === length - 1) {
         var autoMatchAdd = createInputNoId("button", "Add");
         autoMatchAdd.classList.add("autoMatchAdd");
+        autoMatchAdd.disabled = !enabled;
         autoMatchAdd.addEventListener("click", autoMatchAddHandler);
         autoMatch.appendChild(autoMatchAdd);
     }
+
+    autoMatchFaviconButtonHandler.apply(autoMatchFaviconButton);
 
     parent.appendChild(autoMatch);
 };
@@ -388,9 +434,23 @@ var autoMatchReplaceTypeHandler = function() {
     autoData[parent.dataset.matchNum].isRegexReplace = (value === "regexReplace") ? true : false;
 
     parent.removeChild(parent.children[3]);
-    drawAutoMatchReplaceOptions(parent, autoData[parent.dataset.matchNum]);
+    drawAutoMatchReplaceOptions(parent, autoData[parent.dataset.matchNum], storage.get("autoEnabled"));
 
     save("autoData", autoData);
+};
+
+var autoMatchFaviconButtonHandler = function() {
+    var parent = this.parentElement;
+    var autoData = storage.get("autoData");
+
+    var value = parent.children[4].value;
+    var image = parent.children[5];
+    if (value === "") {
+        image.classList.add("invisible");
+    } else {
+        image.src = getFaviconFromURL(value);
+        image.classList.remove("invisible");
+    }
 };
 
 var autoMatchRemoveHandler = function() {
@@ -409,28 +469,20 @@ var autoMatchAddHandler = function() {
     var parent = this.parentElement.parentElement;
     this.parentElement.removeChild(this);
     var autoData = storage.get("autoData");
-    var num = autoData.push({
-        "isRegexMatch": false,
-        "isRegexReplace": false,
-        "match": "",
-        "replace": "",
-        "regexReplace": {
-            "match": "",
-            "replace": ""
-        }
-    });
+    var num = autoData.push(defaultAutoMatch);
 
     save("autoData", autoData);
 
-    drawAutoMatch(parent, autoData[num - 1], num - 1, num)
+    drawAutoMatch(parent, autoData[num - 1], num - 1, num, storage.get("autoEnabled"));
 };
 
-var drawAutoMatchReplaceOptions = function(parent, auto) {
+var drawAutoMatchReplaceOptions = function(parent, auto, enabled) {
     var autoMatchReplaceOptions = document.createElement("span");
     autoMatchReplaceOptions.classList.add("autoMatchReplaceOptions");
     if (auto.isRegexReplace) {
         var autoMatchReplaceMatch = createInputNoId("text", auto.regexReplace.match);
         autoMatchReplaceMatch.classList.add("autoMatchReplaceMatch");
+        autoMatchReplaceMatch.disabled = !enabled;
         autoMatchReplaceMatch.placeholder = "/google/gi";
         addTypingHandlers(autoMatchReplaceMatch, function() {
             // TODO validate
@@ -443,6 +495,7 @@ var drawAutoMatchReplaceOptions = function(parent, auto) {
 
         var autoMatchReplaceReplace = createInputNoId("text", auto.regexReplace.replace);
         autoMatchReplaceReplace.classList.add("autoMatchReplaceReplace");
+        autoMatchReplaceReplace.disabled = !enabled;
         autoMatchReplaceReplace.placeholder = "bugle";
         addTypingHandlers(autoMatchReplaceReplace, function() {
             // TODO validate
@@ -457,6 +510,7 @@ var drawAutoMatchReplaceOptions = function(parent, auto) {
     } else {
         var autoMatchReplace = createInputNoId("text", auto.replace);
         autoMatchReplace.classList.add("autoMatchReplace");
+        autoMatchReplace.disabled = !enabled;
         addTypingHandlers(autoMatchReplace, function() {
             // TODO validate
             var parent = this.parentElement.parentElement;

@@ -7,6 +7,7 @@ var storageDefaults = {
     "shortcutKey": "-10000000",
     "preset": false,
     "selectedPreset": "wikipedia",
+    "autoEnabled": true,
     "autoData": [{
         "isRegexMatch": true,
         "isRegexReplace": false,
@@ -15,7 +16,8 @@ var storageDefaults = {
         "regexReplace": {
             "match": "",
             "replace": ""
-        }
+        },
+        "favicon": "google.com"
     }, {
         "isRegexMatch": false,
         "isRegexReplace": true,
@@ -24,8 +26,20 @@ var storageDefaults = {
         "regexReplace": {
             "match": "/(.*)/",
             "replace": "$1 4 LYFE"
-        }
+        },
+        "favicon": "github.com"
     }]
+};
+
+var defaultAutoMatch = {
+    "isRegexMatch": false,
+    "isRegexReplace": false,
+    "match": "",
+    "replace": "",
+    "regexReplace": {
+        "match": "",
+        "replace": ""
+    }
 };
 
 var storage = new Store("tabrenamer", storageDefaults);
@@ -57,6 +71,33 @@ var KEY_ENTER = 13;
 var KEY_TAB = 9;
 
 var l = function() { console.log.apply(console, arguments); };
+
+Object.prototype.equals = function(x) {
+    var p;
+    for(p in this) {
+        if(typeof(x[p])=='undefined') return false;
+    }
+    for(p in this) {
+        if (this[p]) {
+            switch(typeof(this[p])) {
+            case 'object':
+                if (!this[p].equals(x[p])) return false;
+                break;
+            case 'function':
+                if (typeof(x[p])=='undefined' || (p != 'equals' && this[p].toString() != x[p].toString())) return false;
+                break;
+            default:
+                if (this[p] != x[p]) { return false; }
+            }
+        } else {
+            if (x[p]) return false;
+        }
+    }
+    for(p in x) {
+        if(typeof(this[p])=='undefined') return false;
+    }
+    return true;
+};
 
 var setPopupEnabled = function(enabled) {
     if (enabled) {
@@ -138,7 +179,8 @@ var handleAuto = function(location, title, tabId) {
         }
         var match = parsedRegex.exec(location.href);
         if (match != null) {
-            changeFavicon("", replace, tabId);
+            changeFavicon(auto.favicon, replace, tabId);
+            return;
         }
     }
 };
