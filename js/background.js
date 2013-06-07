@@ -35,7 +35,7 @@ var initialize = function() {
             });
             break;
         case "init":
-            handleAuto(message.location, sender.tab.id);
+            handleAuto(message.location, message.title, sender.tab.id);
             break;
         }
     });

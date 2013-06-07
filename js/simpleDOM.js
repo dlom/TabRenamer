@@ -1,6 +1,5 @@
-var createInput = function(id, type, value) {
+var createInputNoId = function(type, value) {
     var input = document.createElement("input");
-    input.id = id;
     input.type = type;
     if (value != null) {
         input.value = value;
@@ -8,9 +7,14 @@ var createInput = function(id, type, value) {
     return input;
 };
 
-var createSelect = function(id, options) {
+var createInput = function(id, type, value) {
+    var input = createInputNoId(type, value);
+    input.id = id;
+    return input;
+};
+
+var createSelectNoId = function(options) {
     var select = document.createElement("select");
-    select.id = id;
     for (var value in options) {
         if (options.hasOwnProperty(value)) {
             var text = options[value];
@@ -23,6 +27,12 @@ var createSelect = function(id, options) {
             select.appendChild(option);
         }
     }
+    return select;
+};
+
+var createSelect = function(id, options) {
+    var select = createSelectNoId(options);
+    select.id = id;
     return select;
 };
 
@@ -50,27 +60,28 @@ var addTypingHandlers = function(input, handler) {
         var keyPressed = e.key || e.keyCode || e.which;
         clearTimeout(state.interval);
         state.interval = null;
-        if (keyPressed !== KEY_ENTER) {
+        if (keyPressed !== KEY_ENTER && keyPressed !== KEY_TAB) {
             state = {
                 "e": e,
                 "interval": setTimeout(function() {
-                    handler(e);
+                    handler.call(input, e);
                 }, 1000)
             };
-        } else {
-            handler(e);
+        } else if (keyPressed !== KEY_TAB) {
+            handler.call(input, e);
         }
     });
 
-    input.addEventListener("keydown", function() {
+    input.addEventListener("keydown", function(e) {
+        var keyPressed = e.key || e.keyCode || e.which;
         clearTimeout(state.interval);
-        state.interval = null;
+        if (keyPressed !== KEY_TAB) state.interval = null;
     });
 
     input.addEventListener("blur", function() {
         clearTimeout(state.interval);
         if (state.interval != null) {
-            handler(state.e);
+            handler.call(input, state.e);
         }
         state.interval = null;
     });

@@ -161,7 +161,7 @@ var selectedPresetHandler = function() {
 var drawQuickNonPresetOptions = function(parent) {
     var quickTitle = createInput("quickTitle", "text", storage.get("quickTitle"));
     addTypingHandlers(quickTitle, function() {
-        save(quickTitle.id, quickTitle.value);
+        save("quickTitle", this.value);
     });
 
     var quickTitleLabel = createLabel("quickTitle", "Quick Change Title: ");
@@ -169,7 +169,7 @@ var drawQuickNonPresetOptions = function(parent) {
     var quickFavicon = createInput("quickFavicon", "text", storage.get("quickFavicon"));
     addTypingHandlers(quickFavicon, function() {
         quickFaviconTestButtonHandler();
-        save(quickFavicon.id, quickFavicon.value);
+        save("quickFavicon", this.value);
     });
 
     var quickFaviconLabel = createLabel("quickFavicon", "Site's Favicon: ", "Example: 'http://google.com'.  For a default blank favicon, use 'blank'.  To not change the favicon, use '' (Nothing)");
@@ -222,6 +222,7 @@ var showAdvancedHandler = function() {
     if (this.checked) {
         drawSyncSaveButton(advancedOptions);
         drawSyncLoadButton(advancedOptions);
+        // drawResetOptionsButton(advancedOptions);
     }
 };
 
@@ -254,8 +255,225 @@ var syncLoadHandler = function() {
     });
 };
 
+/*var drawResetOptionsButton = function(parent) {
+    var resetOptions = createInput("resetOptions", "button", "Reset");
+    resetOptions.addEventListener("click", resetOptionsHandler);
+
+    parent.appendChild(resetOptions);
+};
+
+var resetOptionsHandler = function() {
+    storage.fromObject(storageDefaults, false, true);
+    initialize();
+};*/
+
 var drawAutoOptions = function(parent) {
-    parent.appendChild(document.createTextNode("auto heyooooooo"));
-}
+    var autoOptions = document.createElement("div");
+    autoOptions.id = "autoOptions";
+
+    drawAutoMatches(autoOptions);
+
+    parent.appendChild(autoOptions);
+};
+
+var drawAutoMatches = function(parent) {
+    var autoMatchesHeader = document.createElement("h2");
+    autoMatchesHeader.appendChild(document.createTextNode("Auto Options"));
+
+    var autoMatches = document.createElement("ul");
+    autoMatches.id = "autoMatches";
+
+    var autoData = storage.get("autoData");
+    if (autoData.length === 0) {
+        autoData.push({
+            "isRegexMatch": false,
+            "isRegexReplace": false,
+            "match": "",
+            "replace": "",
+            "regexReplace": {
+                "match": "",
+                "replace": ""
+            }
+        });
+        save("autoData", autoData);
+
+        drawAutoMatch(autoMatches, autoData[0], 0, 1);
+    } else {
+        for (var i = 0; i < autoData.length; i++) {
+            drawAutoMatch(autoMatches, autoData[i], i, autoData.length);
+        }
+    }
+
+    parent.appendChild(autoMatchesHeader);
+    parent.appendChild(autoMatches);
+};
+
+var drawAutoMatch = function(parent, auto, num, length) {
+    var autoMatch = document.createElement("li");
+    autoMatch.dataset.matchNum = num;
+    autoMatch.classList.add("autoMatch");
+
+    var infoText1 = document.createTextNode("Match a url using the ");
+
+    var autoMatchMatchType = createSelectNoId({
+        "regex": "regular expression",
+        "wildcard": "wildcard expression"
+    });
+    autoMatchMatchType.value = (auto.isRegexMatch) ? "regex" : "wildcard";
+    autoMatchMatchType.classList.add("autoMatchMatchType");
+    autoMatchMatchType.addEventListener("change", autoMatchMatchTypeHandler);
+
+    var autoMatchMatch = createInputNoId("text", auto.match);
+    autoMatchMatch.classList.add("autoMatchMatch");
+    autoMatchMatch.placeholder = (auto.isRegexMatch) ? "/google/g" : "*google*";
+    addTypingHandlers(autoMatchMatch, function() {
+        // TODO validate
+        var parent = this.parentElement;
+        var autoData = storage.get("autoData");
+        autoData[parent.dataset.matchNum].match = this.value;
+
+        save("autoData", autoData);
+    });
+
+
+    var infoText2 = document.createTextNode(" and ");
+
+    var autoMatchReplaceType = createSelectNoId({
+        "regexReplace": "regex replace",
+        "replace": "replace"
+    });
+    autoMatchReplaceType.value = (auto.isRegexReplace) ? "regexReplace" : "replace";
+    autoMatchReplaceType.classList.add("autoMatchReplaceType");
+    autoMatchReplaceType.addEventListener("change", autoMatchReplaceTypeHandler);
+
+    var infoText3 = document.createTextNode(" it with ");
+
+    var autoMatchRemove = createInputNoId("button", "Remove");
+    autoMatchRemove.classList.add("autoMatchRemove");
+    autoMatchRemove.addEventListener("click", autoMatchRemoveHandler);
+
+    autoMatch.appendChild(infoText1);
+    autoMatch.appendChild(autoMatchMatchType);
+    autoMatch.appendChild(autoMatchMatch);
+    autoMatch.appendChild(infoText2);
+    autoMatch.appendChild(autoMatchReplaceType);
+    autoMatch.appendChild(infoText3);
+    autoMatch.appendChild(autoMatchRemove);
+    drawAutoMatchReplaceOptions(autoMatch, auto); // hax
+
+    if (num === length - 1) {
+        var autoMatchAdd = createInputNoId("button", "Add");
+        autoMatchAdd.classList.add("autoMatchAdd");
+        autoMatchAdd.addEventListener("click", autoMatchAddHandler);
+        autoMatch.appendChild(autoMatchAdd);
+    }
+
+    parent.appendChild(autoMatch);
+};
+
+var autoMatchMatchTypeHandler = function() {
+    var parent = this.parentElement;
+    var autoData = storage.get("autoData");
+    autoData[parent.dataset.matchNum].isRegexMatch = (this.value === "regex") ? true : false;
+
+    parent.children[1].placeholder = (this.value === "regex") ? "/google/g" : "*google*";
+
+    save("autoData", autoData);
+};
+
+var autoMatchReplaceTypeHandler = function() {
+    var parent = this.parentElement;
+    var autoData = storage.get("autoData");
+    var value = this.value
+    autoData[parent.dataset.matchNum].isRegexReplace = (value === "regexReplace") ? true : false;
+
+    parent.removeChild(parent.children[3]);
+    drawAutoMatchReplaceOptions(parent, autoData[parent.dataset.matchNum]);
+
+    save("autoData", autoData);
+};
+
+var autoMatchRemoveHandler = function() {
+    var parent = this.parentElement;
+    var autoData = storage.get("autoData");
+    autoData.splice(parent.dataset.matchNum, 1);
+
+    save("autoData", autoData);
+
+    var autoOptions = document.getElementById("autoOptions");
+    autoOptions.innerHTML = "";
+    drawAutoMatches(autoOptions);
+};
+
+var autoMatchAddHandler = function() {
+    var parent = this.parentElement.parentElement;
+    this.parentElement.removeChild(this);
+    var autoData = storage.get("autoData");
+    var num = autoData.push({
+        "isRegexMatch": false,
+        "isRegexReplace": false,
+        "match": "",
+        "replace": "",
+        "regexReplace": {
+            "match": "",
+            "replace": ""
+        }
+    });
+
+    save("autoData", autoData);
+
+    drawAutoMatch(parent, autoData[num - 1], num - 1, num)
+};
+
+var drawAutoMatchReplaceOptions = function(parent, auto) {
+    var autoMatchReplaceOptions = document.createElement("span");
+    autoMatchReplaceOptions.classList.add("autoMatchReplaceOptions");
+    if (auto.isRegexReplace) {
+        var autoMatchReplaceMatch = createInputNoId("text", auto.regexReplace.match);
+        autoMatchReplaceMatch.classList.add("autoMatchReplaceMatch");
+        autoMatchReplaceMatch.placeholder = "/google/gi";
+        addTypingHandlers(autoMatchReplaceMatch, function() {
+            // TODO validate
+            var parent = this.parentElement.parentElement;
+            var autoData = storage.get("autoData");
+            autoData[parent.dataset.matchNum].regexReplace.match = this.value;
+
+            save("autoData", autoData);
+        });
+
+        var autoMatchReplaceReplace = createInputNoId("text", auto.regexReplace.replace);
+        autoMatchReplaceReplace.classList.add("autoMatchReplaceReplace");
+        autoMatchReplaceReplace.placeholder = "bugle";
+        addTypingHandlers(autoMatchReplaceReplace, function() {
+            // TODO validate
+            var parent = this.parentElement.parentElement;
+            var autoData = storage.get("autoData");
+            autoData[parent.dataset.matchNum].regexReplace.replace = this.value;
+
+            save("autoData", autoData);
+        });
+        autoMatchReplaceOptions.appendChild(autoMatchReplaceMatch);
+        autoMatchReplaceOptions.appendChild(autoMatchReplaceReplace);
+    } else {
+        var autoMatchReplace = createInputNoId("text", auto.replace);
+        autoMatchReplace.classList.add("autoMatchReplace");
+        addTypingHandlers(autoMatchReplace, function() {
+            // TODO validate
+            var parent = this.parentElement.parentElement;
+            var autoData = storage.get("autoData");
+            autoData[parent.dataset.matchNum].replace = this.value;
+
+            save("autoData", autoData);
+        });
+
+        var autoMatchReplaceSpacer = createInputNoId("text", "");
+        autoMatchReplaceSpacer.classList.add("autoMatchReplaceSpacer");
+
+        autoMatchReplaceOptions.appendChild(autoMatchReplace);
+        autoMatchReplaceOptions.appendChild(autoMatchReplaceSpacer);
+    }
+
+    parent.insertBefore(autoMatchReplaceOptions, parent.children[3]); // uberhax
+};
 
 window.addEventListener("load", initialize);

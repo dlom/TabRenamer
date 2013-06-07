@@ -8,13 +8,23 @@ var storageDefaults = {
     "preset": false,
     "selectedPreset": "wikipedia",
     "autoData": [{
-        "isRegex": true,
+        "isRegexMatch": true,
+        "isRegexReplace": false,
         "match": "/.*google.com\\/?.*/",
-        "replace": "GOOGLE SUX"
+        "replace": "GOOGLE SUX",
+        "regexReplace": {
+            "match": "",
+            "replace": ""
+        }
     }, {
-        "isRegex": false,
+        "isRegexMatch": false,
+        "isRegexReplace": true,
         "match": "*github*",
-        "replace": "GITHUB 4 LYFE"
+        "replace": "",
+        "regexReplace": {
+            "match": "/(.*)/g",
+            "replace": "$1 4 LYFE"
+        }
     }]
 };
 
@@ -44,6 +54,7 @@ var presets = {
 };
 
 var KEY_ENTER = 13;
+var KEY_TAB = 9;
 
 var l = function() { console.log.apply(console, arguments); };
 
@@ -103,19 +114,31 @@ var changeFavicon = function(url, title, tabId) {
     });
 };
 
-var handleAuto = function(location, tabId) {
+var handleAuto = function(location, title, tabId) {
     var autoData = storage.get("autoData");
     for (var i = 0; i < autoData.length; i++) {
-        var regex = autoData[i].match;
-        if (!autoData[i].isRegex) regex = "/" + regex.replace(/([\\\+\|\{\}\[\]\(\)\^\$\.\#])/g, "\\$1").replace(/\*/g, ".*").replace(/\?/g, ".") + "/";
+        var auto = autoData[i];
+        var regex = auto.match;
+        if (!auto.isRegexMatch) regex = "/" + regex.replace(/([\\\+\|\{\}\[\]\(\)\^\$\.\#])/g, "\\$1").replace(/\*/g, ".*").replace(/\?/g, ".") + "/";
         var parsedRegex = parseRegex(regex);
         if (parsedRegex == null) {
             console.error("Malformed RegExp `" + regex + "`!", i);
             return;
         }
+        var replace;
+        if (auto.isRegexReplace) {
+            var regexReplace = parseRegex(auto.regexReplace.match);
+            if (regexReplace == null) {
+                console.error("Malformed RegExp `" + regexReplace + "`!", i);
+                return;
+            }
+            replace = title.replace(regexReplace, auto.regexReplace.replace);
+        } else {
+            replace = auto.replace;
+        }
         var match = parsedRegex.exec(location.href);
         if (match != null) {
-            changeFavicon("", autoData[i].replace, tabId);
+            changeFavicon("", replace, tabId);
         }
     }
 };
