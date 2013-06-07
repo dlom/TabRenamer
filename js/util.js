@@ -22,7 +22,7 @@ var storageDefaults = {
         "match": "*github*",
         "replace": "",
         "regexReplace": {
-            "match": "/(.*)/g",
+            "match": "/(.*)/",
             "replace": "$1 4 LYFE"
         }
     }]
