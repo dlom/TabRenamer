@@ -1,6 +1,6 @@
 var detectOldVersion = function() {
     return localStorage.getItem("store.settings.version") != null;
-}
+};
 
 var convertOldSettings = function() {
     return {
@@ -13,7 +13,7 @@ var convertOldSettings = function() {
         "preset": JSON.parse(localStorage.getItem("store.settings.presets")),
         "selectedPreset": JSON.parse(localStorage.getItem("store.settings.selectedPreset"))
     };
-}
+};
 
 if (detectOldVersion()) {
     oldSettings = convertOldSettings();

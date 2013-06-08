@@ -280,7 +280,7 @@ var drawAutoMatches = function(parent) {
     var autoMatchesHeader = document.createElement("h2");
     autoMatchesHeader.appendChild(document.createTextNode("Auto Options"));
 
-    var autoEnabler = createInput("autoEnabler", "button", (storage.get("autoEnabled") ? "Disable" : "Enable"))
+    var autoEnabler = createInput("autoEnabler", "button", (storage.get("autoEnabled") ? "Disable" : "Enable"));
     autoEnabler.addEventListener("click", autoEnablerHandler);
 
     var autoMatches = document.createElement("ul");
@@ -430,7 +430,7 @@ var autoMatchMatchTypeHandler = function() {
 var autoMatchReplaceTypeHandler = function() {
     var parent = this.parentElement;
     var autoData = storage.get("autoData");
-    var value = this.value
+    var value = this.value;
     autoData[parent.dataset.matchNum].isRegexReplace = (value === "regexReplace") ? true : false;
 
     parent.removeChild(parent.children[3]);
