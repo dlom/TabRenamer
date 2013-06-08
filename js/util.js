@@ -156,6 +156,7 @@ var changeFavicon = function(url, title, tabId) {
 };
 
 var handleAuto = function(location, title, tabId) {
+    if (storage.get("autoEnabled") !== true) return;
     var autoData = storage.get("autoData");
     for (var i = 0; i < autoData.length; i++) {
         var auto = autoData[i];
