@@ -5,6 +5,21 @@ window.addEventListener("load", function() {
         titleBox.addEventListener("keydown", function(e) {
             var keyPressed = e.key || e.keyCode || e.which;
             if (keyPressed === KEY_ENTER) {
+                if (storage.get("permanentManual") === true) {
+                    var autoData = storage.get("autoData");
+                    autoData.push({
+                        "isRegexMatch": true,
+                        "isRegexReplace": false,
+                        "match": "/" + t.url.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "/",
+                        "replace": titleBox.value,
+                        "regexReplace": {
+                            "match": "",
+                            "replace": ""
+                        },
+                        "favicon": storage.get("keepFavicon") ? "" : "blank"
+                    });
+                    storage.set("autoData", autoData);
+                }
                 window.close();
             }
         });

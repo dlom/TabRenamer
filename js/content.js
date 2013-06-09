@@ -1,9 +1,3 @@
-var changeFavicon = function() {
-    chrome.runtime.sendMessage({
-        "action": "quickRename"
-    });
-};
-
 /*\
  *  f1:  112  Help
  *  f2:  113
@@ -25,7 +19,9 @@ window.addEventListener("keyup", function(e) {
     }, function(response) {
         var keyPressed = e.key || e.keyCode || e.which;
         if (response.enabled && keyPressed === response.key) {
-            changeFavicon();
+            chrome.runtime.sendMessage({
+                "action": "quickRename"
+            });
         }
     });
 });

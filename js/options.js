@@ -85,12 +85,25 @@ var drawManualOptions = function(parent) {
 
     var keepFaviconLabel = createLabel("keepFavicon", "Keep the original favicon");
 
+    var permanentManual = createInput("permanentManual", "checkbox");
+    permanentManual.checked = storage.get("permanentManual");
+    permanentManual.addEventListener("change", permanentManualHandler);
+
+    var permanentManualLabel = createLabel("permanentManual", "Make renaming permanent");
+
     parent.appendChild(keepFavicon);
     parent.appendChild(keepFaviconLabel);
+    parent.appendChild(document.createElement("br"));
+    parent.appendChild(permanentManual);
+    parent.appendChild(permanentManualLabel);
 };
 
 var keepFaviconHandler = function() {
     save("keepFavicon", this.checked);
+};
+
+var permanentManualHandler = function() {
+    save("permanentManual", this.checked);
 };
 
 var drawQuickChangeOptions = function(parent) {
@@ -255,7 +268,7 @@ var syncLoadHandler = function() {
     });
 };
 
-/*var drawResetOptionsButton = function(parent) {
+var drawResetOptionsButton = function(parent) {
     var resetOptions = createInput("resetOptions", "button", "Reset");
     resetOptions.addEventListener("click", resetOptionsHandler);
 
@@ -265,7 +278,7 @@ var syncLoadHandler = function() {
 var resetOptionsHandler = function() {
     storage.fromObject(storageDefaults, false, true);
     initialize();
-};*/
+};
 
 var drawAutoOptions = function(parent) {
     var autoOptions = document.createElement("div");
@@ -354,6 +367,7 @@ var drawAutoMatch = function(parent, auto, num, length, enabled) {
     });
     autoMatchReplaceType.value = (auto.isRegexReplace) ? "regexReplace" : "replace";
     autoMatchReplaceType.classList.add("autoMatchReplaceType");
+    autoMatchReplaceType.disabled = !enabled;
     autoMatchReplaceType.addEventListener("change", autoMatchReplaceTypeHandler);
 
     var infoText3 = document.createTextNode(" the title with ");
@@ -396,13 +410,13 @@ var drawAutoMatch = function(parent, auto, num, length, enabled) {
     autoMatch.appendChild(infoText2);
     autoMatch.appendChild(autoMatchReplaceType);
     autoMatch.appendChild(infoText3);
+    drawAutoMatchReplaceOptions(autoMatch, auto, enabled);
+    autoMatch.appendChild(infoText4);
     autoMatch.appendChild(autoMatchFavicon);
     autoMatch.appendChild(autoMatchFaviconImage);
     autoMatch.appendChild(autoMatchFaviconButton);
     autoMatch.appendChild(autoMatchSeparator);
     autoMatch.appendChild(autoMatchRemove);
-    drawAutoMatchReplaceOptions(autoMatch, auto, enabled); // hax
-    autoMatch.insertBefore(infoText4, autoMatchFavicon); // oh god the hax
 
     if (num === length - 1) {
         var autoMatchAdd = createInputNoId("button", "Add");
@@ -422,7 +436,7 @@ var autoMatchMatchTypeHandler = function() {
     var autoData = storage.get("autoData");
     autoData[parent.dataset.matchNum].isRegexMatch = (this.value === "regex") ? true : false;
 
-    parent.children[1].placeholder = (this.value === "regex") ? "/google/g" : "*google*";
+    parent.childNodes[2].placeholder = (this.value === "regex") ? "/google/g" : "*google*";
 
     save("autoData", autoData);
 };
@@ -433,8 +447,10 @@ var autoMatchReplaceTypeHandler = function() {
     var value = this.value;
     autoData[parent.dataset.matchNum].isRegexReplace = (value === "regexReplace") ? true : false;
 
-    parent.removeChild(parent.children[3]);
-    drawAutoMatchReplaceOptions(parent, autoData[parent.dataset.matchNum], storage.get("autoEnabled"));
+    var autoMatchReplaceOptions = extractDrawnElement(drawAutoMatchReplaceOptions, autoData[parent.dataset.matchNum], storage.get("autoEnabled"));
+
+    parent.removeChild(parent.childNodes[6]); // less hax
+    parent.insertBefore(autoMatchReplaceOptions, parent.childNodes[6]); // less hax
 
     save("autoData", autoData);
 };
@@ -443,8 +459,8 @@ var autoMatchFaviconButtonHandler = function() {
     var parent = this.parentElement;
     var autoData = storage.get("autoData");
 
-    var value = parent.children[4].value;
-    var image = parent.children[5];
+    var value = parent.childNodes[8].value;
+    var image = parent.childNodes[9];
     if (value === "") {
         image.classList.add("invisible");
     } else {
@@ -527,7 +543,7 @@ var drawAutoMatchReplaceOptions = function(parent, auto, enabled) {
         autoMatchReplaceOptions.appendChild(autoMatchReplaceSpacer);
     }
 
-    parent.insertBefore(autoMatchReplaceOptions, parent.children[3]); // uberhax
+    parent.appendChild(autoMatchReplaceOptions);
 };
 
 window.addEventListener("load", initialize);

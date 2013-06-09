@@ -2,6 +2,7 @@ var storageDefaults = {
     "faviconEndpoint": "http://g.etfv.co/",
     "type": "manual",
     "keepFavicon": false,
+    "permanentManual": false,
     "quickTitle": "",
     "quickFavicon": "blank",
     "shortcutKey": "-10000000",
@@ -39,7 +40,8 @@ var defaultAutoMatch = {
     "regexReplace": {
         "match": "",
         "replace": ""
-    }
+    },
+    "favicon": ""
 };
 
 var storage = new Store("tabrenamer", storageDefaults);
@@ -158,6 +160,9 @@ var changeFavicon = function(url, title, tabId) {
 var handleAuto = function(location, title, tabId) {
     if (storage.get("autoEnabled") !== true) return;
     var autoData = storage.get("autoData");
+    autoData = autoData.filter(function(elem) {
+        return !elem.equals(defaultAutoMatch);
+    });
     for (var i = 0; i < autoData.length; i++) {
         var auto = autoData[i];
         var regex = auto.match;
@@ -209,4 +214,15 @@ var getCurrentTab = function(callback) {
         var tab = (tabs.length === 0 ? tabs : tabs[0]);
         callback(tab);
     });
+};
+
+var extractDrawnElement = function(drawFunction) {
+    var parent = document.createElement("div");
+    args = [].slice.call(arguments, 0);
+    args[0] = parent;
+    console.log(args);
+    drawFunction.apply(null, args);
+    var element = parent.firstChild;
+    parent.removeChild(element);
+    return element;
 };
