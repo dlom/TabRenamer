@@ -1,13 +1,5 @@
-var getWindowAndTab = function(callback) {
-    chrome.windows.getCurrent(function(w) {
-        chrome.tabs.getSelected(w.id, function (t) {
-            callback(w, t);
-        });
-    });
-};
-
 window.addEventListener("load", function() {
-    getWindowAndTab(function(w, t) {
+    getCurrentTab(function(t) {
         var titleBox = document.getElementById("title");
 
         titleBox.addEventListener("keydown", function(e) {
