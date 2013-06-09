@@ -208,10 +208,10 @@ var parseRegex = function(regex) {
 
 var getCurrentTab = function(callback) {
     chrome.tabs.query({
-        active : true,
+        active: true,
         currentWindow: true
     }, function(tabs) {
-        var tab = (tabs.length === 0 ? tabs : tabs[0]);
+        var tab = (tabs.length === 0) ? tabs : tabs[0];
         callback(tab);
     });
 };
