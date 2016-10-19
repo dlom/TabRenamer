@@ -1,5 +1,5 @@
 var storageDefaults = {
-    "faviconEndpoint": "http://g.etfv.co/",
+    "faviconEndpoint": "https://api.byi.pw/favicon/?url=",
     "type": "manual",
     "keepFavicon": false,
     "permanentManual": false,
